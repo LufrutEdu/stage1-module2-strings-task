@@ -1,5 +1,11 @@
 package com.epam.mjc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 public class MethodParser {
 
     /**
@@ -20,6 +26,32 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        MethodSignature out;
+        List<String> str =  Arrays.stream(signatureString.split(" |, |[(|)]"))
+                .filter(Predicate.not(String::isBlank))
+                .filter(Predicate.not(String::isEmpty))
+                .collect(Collectors.toList());
+        List<MethodSignature.Argument> arguments = new ArrayList<>();
+        if(
+                str.get(0).equals("private") ||
+                        str.get(0).equals("public") ||
+                        str.get(0).equals("protect")
+        ) {
+            for(int i = 3; i < str.size() - 1; i+=2){
+                arguments.add(new MethodSignature.Argument(str.get(i), str.get(i+1)));
+            }
+            out = new MethodSignature(str.get(2),arguments);
+            out.setAccessModifier(str.get(0));
+            out.setReturnType(str.get(1));
+
+        } else {
+            for(int i = 2; i < str.size() - 1; i+=2){
+                arguments.add(new MethodSignature.Argument(str.get(i), str.get(i+1)));
+            }
+            out = new MethodSignature(str.get(1),arguments);
+            out.setReturnType(str.get(0));
+        }
+        return out;
+
     }
 }

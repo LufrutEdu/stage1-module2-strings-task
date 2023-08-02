@@ -1,7 +1,10 @@
 package com.epam.mjc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class StringSplitter {
 
@@ -13,6 +16,12 @@ public class StringSplitter {
      * @return List of substrings
      */
     public List<String> splitByDelimiters(String source, Collection<String> delimiters) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        StringBuilder builder = new StringBuilder();
+        delimiters.forEach(i -> builder.append(i).append("|"));
+        builder.deleteCharAt(builder.length() - 1);
+        return Arrays.stream(source.split(builder.toString()))
+                .filter(Predicate.not(String::isBlank))
+                .filter(Predicate.not(String::isEmpty))
+                .collect(Collectors.toList());
     }
 }
